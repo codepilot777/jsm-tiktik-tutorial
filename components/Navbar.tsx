@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect  } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { BiSearch } from 'react-icons/bi';
 import { IoMdAdd } from 'react-icons/io';
@@ -13,7 +13,19 @@ import Logo from '../utils/tiktik-logo.png';
 import useAuthStore from '../store/authStore';
 
 const Navbar = () => {
+  const [searchValue, setSearchValue] = useState('')
+  
   const { userProfile, addUser, removeUser } = useAuthStore();
+  const router = useRouter();
+
+
+  const handleSearch = (e: { preventDefault: () => void}) => {
+    e.preventDefault();
+    if (searchValue) {
+      router.push(`/search/${searchValue}`)
+      setSearchValue('');
+    }
+  }
   return (
     <div className="flex items-center justify-between w-full px-4 py-2 border-b-2 border-gray-200">
       <Link href="/">
@@ -26,8 +38,22 @@ const Navbar = () => {
           />
         </div>
       </Link>
-      <div>
-        SEARCH
+      <div className="relative hidden md:block">
+        <form
+          onSubmit={handleSearch}
+          className="absolute bg-white md:static top-10 -left-20"
+        >
+          <input 
+            type="text"
+            onChange={(e)=>setSearchValue(e.target.value)}
+            value={searchValue}
+            placeholder="Search here..."
+            className="p-3 font-medium border-2 border-gray-100 bg-primary md:text-md focus:outline-none focus:border-2 focus:border-gray-300 w-[300px] md:w-[350px] rounded-full md:top-0"
+          />
+          <button onClick={handleSearch} className="absolute pl-4 text-2xl text-gray-400 border-l-2 border-gray-300 md:right-5 right-6 top-4">
+            <BiSearch className="text-xl" />
+          </button>
+        </form>
       </div>
       <div>
         {
